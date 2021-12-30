@@ -1,0 +1,4 @@
+Menu
+ > [P] Play
+ > [R] Record
+ > [E] Exit
