@@ -3,8 +3,8 @@
 void clean();
 
 int main() {
-    char f_menu_path[] = "c-sokoban/files/menu.txt";
-    char *menu = load_file(f_menu_path);
+    char menu_path[] = "c-sokoban/files/menu.txt";
+    char *menu = load_file(menu_path);
     printf("%s\n", menu);
     return 0;
 }
