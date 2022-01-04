@@ -1,6 +1,12 @@
 #include "file.h"
 #include "strings.h"
 
+const char *player_s = "P";
+const char *block_s = "#";
+const char *box_s = "@";
+const char *goal_s = "O";
+const char *endline_s = "\n";
+
 void clean();
 void menu();
 void play();
@@ -38,28 +44,74 @@ void menu() {
     return;
 }
 
+int move(char ***mapp, coordinate *playerp) {
+    char command;
+    coordinate command_dir = {.x = 0, .y = 0};
+    scanf(" %c", &command);
+
+    switch (command) {
+    case 'w':
+        command_dir = (coordinate){.x = 0, .y = -1};
+        break;
+    case 'a':
+        command_dir = (coordinate){.x = -1, .y = 0};
+        break;
+    case 's':
+        command_dir = (coordinate){.x = 0, .y = 1};
+        break;
+    case 'd':
+        command_dir = (coordinate){.x = 1, .y = 0};
+        break;
+    default:
+        break;
+    }
+
+    coordinate player_want = add(*playerp, command_dir);
+
+    //map NULL check
+
+    if (getstr2coor(*mapp, player_want) == ' ') {
+        setstr2coor(mapp, *playerp, ' ');
+        setstr2coor(mapp, player_want, *player_s);
+        coorcopy(playerp, player_want);
+        return 1;
+    } else if (getstr2coor(*mapp, player_want) == *box_s) {
+        coordinate box_want = add(player_want, command_dir);
+        if (getstr2coor(*mapp, box_want) == ' ') {
+            setstr2coor(mapp, box_want, *box_s);
+            setstr2coor(mapp, player_want, *player_s);
+            setstr2coor(mapp, *playerp, ' ');
+            coorcopy(playerp, player_want);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 void play() {
     clean();
     char path[] = "c-sokoban/files/map.txt";
     char *mapfile = load_file(path);
 
-    //#, *, @, % 등을 block, goal, box, player 등으로 변환시키거나 반대로 변환. (만약 기호를 바꿀 생각이 없다면 굳이 필요없음)
-    //const char player = '#'으로 충분할지도.
-
     char **map;
-    int mapheight = split(&map, mapfile, "\n");
+    int mapheight = split(&map, mapfile, endline_s);
 
-    printf("%d\n", mapheight);
-    for (int i = 0; i < mapheight - 1; i++) {
+    for (int i = 0; i < mapheight; i++) {
         printf("%s\n", map[i]);
     }
-    coordinate player = str2dstr(map, mapheight, "%");
+    coordinate player = str2dstr(map, mapheight, player_s);
     printf("%d %d\n", player.x, player.y);
-    //maybe need map(f, xs)
 
-    //px, py = find_player(map)  //maybe need coordinate struct?
-    //move player
+    while (1) {
+        move(&map, &player);
+        clean();
 
+        for (int i = 0; i < mapheight; i++) {
+            printf("%s\n", map[i]);
+        }
+        printf("%d %d\n", player.x, player.y);
+    }
     return;
 }
 
