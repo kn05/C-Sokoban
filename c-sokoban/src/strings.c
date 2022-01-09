@@ -40,3 +40,9 @@ coordinate str2dstr(char **xss, int height, const char *token) {
     }
     return p;
 }
+
+void printstr2(char **str2, int height) {
+    for (int i = 0; i < height; i++) {
+        printf("%s\n", str2[i]);
+    }
+}

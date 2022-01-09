@@ -44,21 +44,23 @@ void menu() {
     return;
 }
 
-int move(char ***mapp, coordinate *playerp) {
-    char command;
-    coordinate command_dir = {.x = 0, .y = 0};
-    scanf(" %c", &command);
+int move(char ***mapp, coordinate *playerp, char command) {
+    coordinate command_dir;
 
     switch (command) {
+    case 'W':
     case 'w':
         command_dir = (coordinate){.x = 0, .y = -1};
         break;
+    case 'A':
     case 'a':
         command_dir = (coordinate){.x = -1, .y = 0};
         break;
+    case 'S':
     case 's':
         command_dir = (coordinate){.x = 0, .y = 1};
         break;
+    case 'D':
     case 'd':
         command_dir = (coordinate){.x = 1, .y = 0};
         break;
@@ -104,13 +106,17 @@ void play() {
     printf("%d %d\n", player.x, player.y);
 
     while (1) {
-        move(&map, &player);
-        clean();
+        char command;
+        scanf(" %c", &command);
 
-        for (int i = 0; i < mapheight; i++) {
-            printf("%s\n", map[i]);
+        if (command == 'e' || command == 'E') {
+            exit(0);
+        } else {
+            move(&map, &player, command);
+            clean();
+            printstr2(map, mapheight);
+            printf("%d %d\n", player.x, player.y);
         }
-        printf("%d %d\n", player.x, player.y);
     }
     return;
 }
