@@ -3,7 +3,7 @@
 char *load_file(char *path) {
     FILE *f = fopen(path, "r");
     if (f == NULL) {
-        printf("file pointer is null.\n");
+        printf("load_file: file pointer is null.\n");
         return NULL;
     }
     long size = fsize(f);

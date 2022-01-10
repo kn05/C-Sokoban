@@ -3,8 +3,9 @@
 
 const char *player_s = "P";
 const char *block_s = "#";
-const char *box_s = "@";
-const char *goal_s = "O";
+const char *filled_box_s = "@";
+const char *empty_box_s = "O";
+const char *goal_s = "!";
 const char *endline_s = "\n";
 
 void clean();
@@ -44,66 +45,94 @@ void menu() {
     return;
 }
 
-int move(char ***mapp, coordinate *playerp, char command) {
-    coordinate command_dir;
+int push(char ***mapp, coordinate box, coordinate dir) {
+    coordinate box_want = add(box, dir);
+    if (getstr2coor(*mapp, box_want) == ' ') {
+        setstr2coor(mapp, box_want, *empty_box_s);
+        if (getstr2coor(*mapp, box) == *empty_box_s) {
+            setstr2coor(mapp, box, ' ');
+        } else if (getstr2coor(*mapp, box) == *filled_box_s) {
+            setstr2coor(mapp, box, *goal_s);
+        }
+        return 1;
+    } else if (getstr2coor(*mapp, box_want) == *goal_s) {
+        setstr2coor(mapp, box_want, *filled_box_s);
+        if (getstr2coor(*mapp, box) == *empty_box_s) {
+            setstr2coor(mapp, box, ' ');
+        } else if (getstr2coor(*mapp, box) == *filled_box_s) {
+            setstr2coor(mapp, box, *goal_s);
+        }
+        return 1;
+    }
+    return 0;
+}
 
+int move(char ***mapp, coordinate *playerp, char command, int moves, int pushes) {
+    coordinate dir;
     switch (command) {
     case 'W':
     case 'w':
-        command_dir = (coordinate){.x = 0, .y = -1};
+        dir = (coordinate){.x = 0, .y = -1};
         break;
     case 'A':
     case 'a':
-        command_dir = (coordinate){.x = -1, .y = 0};
+        dir = (coordinate){.x = -1, .y = 0};
         break;
     case 'S':
     case 's':
-        command_dir = (coordinate){.x = 0, .y = 1};
+        dir = (coordinate){.x = 0, .y = 1};
         break;
     case 'D':
     case 'd':
-        command_dir = (coordinate){.x = 1, .y = 0};
+        dir = (coordinate){.x = 1, .y = 0};
         break;
     default:
         break;
     }
+    coordinate player_want = add(*playerp, dir);
 
-    coordinate player_want = add(*playerp, command_dir);
-
-    //map NULL check
-
-    if (getstr2coor(*mapp, player_want) == ' ') {
-        setstr2coor(mapp, *playerp, ' ');
-        setstr2coor(mapp, player_want, *player_s);
+    if (getstr2coor(*mapp, player_want) == ' ' || getstr2coor(*mapp, player_want) == *goal_s) {
         coorcopy(playerp, player_want);
         return 1;
-    } else if (getstr2coor(*mapp, player_want) == *box_s) {
-        coordinate box_want = add(player_want, command_dir);
-        if (getstr2coor(*mapp, box_want) == ' ') {
-            setstr2coor(mapp, box_want, *box_s);
-            setstr2coor(mapp, player_want, *player_s);
-            setstr2coor(mapp, *playerp, ' ');
+    } else if (getstr2coor(*mapp, player_want) == *filled_box_s || getstr2coor(*mapp, player_want) == *empty_box_s) {
+        if (push(mapp, player_want, dir)) {
             coorcopy(playerp, player_want);
             return 1;
         }
+        return 0;
     }
-
     return 0;
 }
 
 void play() {
     clean();
-    char path[] = "c-sokoban/files/map.txt";
-    char *mapfile = load_file(path);
-
+    char map_path[] = "c-sokoban/files/map.txt";
+    char *map_file = load_file(map_path);
     char **map;
-    int mapheight = split(&map, mapfile, endline_s);
+    int mapheight = split(&map, map_file, endline_s);
 
-    for (int i = 0; i < mapheight; i++) {
-        printf("%s\n", map[i]);
+    char log_path[] = "c-sokoban/files/log.txt";
+    coordinate player;
+    int moves;
+    int pushes;
+    {
+        FILE *f_log = fopen(log_path, "r");
+        if (f_log == NULL) {
+            ;
+        } else {
+            fscanf(f_log, "%*s %d %d", &player.x, &player.y);
+            fscanf(f_log, "%*s %d", &moves);
+            fscanf(f_log, "%*s %d", &pushes);
+        }
+        fclose(f_log);
     }
-    coordinate player = str2dstr(map, mapheight, player_s);
+
+    gotoxy(0, 0);
+    printstr2(map, mapheight);
     printf("%d %d\n", player.x, player.y);
+    gotoxy(player.x, player.y);
+    printf("%s", player_s);
+    gotoxy(0, mapheight + 2);
 
     while (1) {
         char command;
@@ -114,8 +143,12 @@ void play() {
         } else {
             move(&map, &player, command);
             clean();
+            gotoxy(0, 0);
             printstr2(map, mapheight);
-            printf("%d %d\n", player.x, player.y);
+            printf("moves: %d \tpushes: %d\n", player.x, player.y);
+            gotoxy(player.x, player.y);
+            printf("%s", player_s);
+            gotoxy(0, mapheight + 2);
         }
     }
     return;
@@ -128,5 +161,5 @@ void record() {
 }
 
 void gotoxy(int x, int y) {
-    printf("%c[%d;%df", 0x1B, y, x);
+    printf("%c[%d;%df", 0x1B, y + 1, x + 1);
 }
