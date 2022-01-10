@@ -67,7 +67,7 @@ int push(char ***mapp, coordinate box, coordinate dir) {
     return 0;
 }
 
-int move(char ***mapp, coordinate *playerp, char command, int moves, int pushes) {
+void move(char ***mapp, coordinate *playerp, char command, int *moves_p, int *pushes_p) {
     coordinate dir;
     switch (command) {
     case 'W':
@@ -93,15 +93,18 @@ int move(char ***mapp, coordinate *playerp, char command, int moves, int pushes)
 
     if (getstr2coor(*mapp, player_want) == ' ' || getstr2coor(*mapp, player_want) == *goal_s) {
         coorcopy(playerp, player_want);
-        return 1;
+        (*moves_p)++;
+        return;
     } else if (getstr2coor(*mapp, player_want) == *filled_box_s || getstr2coor(*mapp, player_want) == *empty_box_s) {
         if (push(mapp, player_want, dir)) {
             coorcopy(playerp, player_want);
-            return 1;
+            (*moves_p)++;
+            (*pushes_p)++;
+            return;
         }
-        return 0;
+        return;
     }
-    return 0;
+    return;
 }
 
 void play() {
@@ -141,14 +144,14 @@ void play() {
         if (command == 'e' || command == 'E') {
             exit(0);
         } else {
-            move(&map, &player, command);
+            move(&map, &player, command, &moves, &pushes);
             clean();
             gotoxy(0, 0);
             printstr2(map, mapheight);
-            printf("moves: %d \tpushes: %d\n", player.x, player.y);
+            printf("\nmoves: %d \tpushes: %d\n", moves, pushes);
             gotoxy(player.x, player.y);
             printf("%s", player_s);
-            gotoxy(0, mapheight + 2);
+            gotoxy(0, mapheight + 3);
         }
     }
     return;
