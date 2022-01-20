@@ -1,3 +1,2 @@
-pos 9 7
 moves 0
 pushes 0

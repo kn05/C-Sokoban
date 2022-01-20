@@ -11,8 +11,7 @@ char getstr2coor(char **xss, coordinate p) {
     return xss[p.y][p.x];
 }
 void setstr2coor(char ***xssp, coordinate p, char c) {
-    char **xss = *xssp;
-    xss[p.y][p.x] = c;
+    (*xssp)[p.y][p.x] = c;
 }
 
 void coorcopy(coordinate *dest, const coordinate origin) {
@@ -26,6 +25,18 @@ int strcount(char *xs, const char *token) {
     while (ptr != NULL) {
         ptr = strstr(ptr + 1, token);
         cnt++;
+    }
+    return cnt;
+}
+
+int str2count(char **str2, int height, const char *token) {
+    int cnt = 0;
+    for (int i = 0; i < height; i++) {
+        char *ptr = strstr(str2[i], token);
+        while (ptr != NULL) {
+            ptr = strstr(ptr + 1, token);
+            cnt++;
+        }
     }
     return cnt;
 }
