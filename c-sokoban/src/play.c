@@ -1,13 +1,13 @@
 #include "play.h"
 
-const char *VOID = " ";
-const char *WALL = "#";
-const char *GOAL = ".";
-const char *BALL = "*";
-const char *IN_BALL = "$";
-const char *PLAYER = "@";
-const char *IN_PLAYER = "+";
-const char *ENDLINE = "\n";
+const char VOID = ' ';
+const char WALL = '#';
+const char GOAL = '.';
+const char BALL = '*';
+const char IN_BALL = '$';
+const char PLAYER = '@';
+const char IN_PLAYER = '+';
+const char ENDLINE = '\n';
 
 void clean() {
     printf("\e[1;1H\e[2J");
@@ -18,29 +18,29 @@ void gotoxy(int x, int y) {
 }
 
 char lose(char c) {
-    if (c == *PLAYER || c == *BALL) {
-        return *VOID;
+    if (c == PLAYER || c == BALL) {
+        return VOID;
     }
-    if (c == *IN_PLAYER || c == *IN_BALL) {
-        return *GOAL;
+    if (c == IN_PLAYER || c == IN_BALL) {
+        return GOAL;
     }
     return 0;
 }
 char gain(char c, char _c) {
-    if (c == *PLAYER || c == *IN_PLAYER) {
-        if (_c == *VOID) {
-            return *PLAYER;
+    if (c == PLAYER || c == IN_PLAYER) {
+        if (_c == VOID) {
+            return PLAYER;
         }
-        if (_c == *GOAL) {
-            return *IN_PLAYER;
+        if (_c == GOAL) {
+            return IN_PLAYER;
         }
     }
-    if (c == *BALL || c == *IN_BALL) {
-        if (_c == *VOID) {
-            return *BALL;
+    if (c == BALL || c == IN_BALL) {
+        if (_c == VOID) {
+            return BALL;
         }
-        if (_c == *GOAL) {
-            return *IN_BALL;
+        if (_c == GOAL) {
+            return IN_BALL;
         }
     }
     return 0;
@@ -56,7 +56,7 @@ int _push(char ***ptrMap, coordinate player, coordinate ball, coordinate dir) {
     coordinate _ball = add(ball, dir);
     char ballStat = getstr2coor(*ptrMap, ball);
     char _ballStat = getstr2coor(*ptrMap, _ball);
-    if (_ballStat == *VOID || _ballStat == *GOAL) {
+    if (_ballStat == VOID || _ballStat == GOAL) {
         _move(ptrMap, ball, _ball, ballStat, _ballStat);
         char playerStat = getstr2coor(*ptrMap, player);
         char _playerStat = getstr2coor(*ptrMap, _player);
@@ -92,7 +92,7 @@ void _step(char ***ptrMap, coordinate *ptrPlayer, char command, int *ptrMoves, i
     coordinate _player = add(*ptrPlayer, dir);
     char playerStat = getstr2coor(*ptrMap, *ptrPlayer);
     char _playerStat = getstr2coor(*ptrMap, _player);
-    if (_playerStat == *IN_BALL || _playerStat == *BALL) { //push를 실행할지 여부.
+    if (_playerStat == IN_BALL || _playerStat == BALL) { // push를 실행할지 여부.
         if (_push(ptrMap, *ptrPlayer, _player, dir)) {
             coorcopy(ptrPlayer, _player);
             (*ptrMoves)++;
@@ -101,7 +101,7 @@ void _step(char ***ptrMap, coordinate *ptrPlayer, char command, int *ptrMoves, i
         }
         return;
     }
-    if (_playerStat == *VOID || _playerStat == *GOAL) {
+    if (_playerStat == VOID || _playerStat == GOAL) {
         _move(ptrMap, *ptrPlayer, _player, playerStat, _playerStat);
         coorcopy(ptrPlayer, _player);
         (*ptrMoves)++;

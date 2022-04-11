@@ -15,10 +15,10 @@ char getstr2coor(char **xss, coordinate p);
 void setstr2coor(char ***xssp, coordinate p, char c);
 void coorcopy(coordinate *dest, const coordinate origin);
 
-int strcount(char *, const char *);
-int str2count(char **str2, int height, const char *token);
-int split(char ***xssp, char *xs, const char *);
-coordinate str2dstr(char **, int, const char *);
+int strcount(char *, const char);
+int str2count(char **str2, int height, const char);
+int split(char ***xssp, char *xs, const char);
+coordinate str2dstr(char **, int, const char);
 void printstr2(char **, int);
 
 #endif
