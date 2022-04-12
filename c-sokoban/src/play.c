@@ -124,10 +124,11 @@ void play() {
     char **map;
     int mapheight = split(&map, map_file, ENDLINE);
     char log_path[] = "c-sokoban/files/log.txt";
+
     coordinate player;
-    int moves;
-    int pushes;
-    {
+    int moves = 0;
+    int pushes = 0;
+    /*{
         FILE *f_log = fopen(log_path, "r");
         if (f_log == NULL) {
             ;
@@ -136,18 +137,22 @@ void play() {
             fscanf(f_log, "%*s %d", &pushes);
         }
         fclose(f_log);
-    }
+    }*/
     player = str2dstr(map, mapheight, PLAYER);
 
     gotoxy(0, 0);
     printstr2(map, mapheight);
     printf("%d %d\n", player.x, player.y);
     printf("moves: %d \tpushes: %d\n", moves, pushes);
+
     while (1) {
         char command;
         scanf(" %c", &command);
 
         if (command == 'e' || command == 'E') {
+            log log_file = {moves, pushes, join(map, mapheight, ENDLINE)};
+            save(log_file, log_path);
+            printf("saved!");
             exit(0);
         } else {
             _step(&map, &player, command, &moves, &pushes);
@@ -162,5 +167,6 @@ void play() {
             }
         }
     }
+
     return;
 }

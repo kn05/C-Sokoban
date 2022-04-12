@@ -2,9 +2,8 @@
 #define PLAY_H_
 
 #include "file.h"
+#include "log.h"
 #include "strings.h"
-
-#include "play.h"
 
 void play();
 

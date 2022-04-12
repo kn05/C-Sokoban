@@ -18,6 +18,7 @@ void coorcopy(coordinate *dest, const coordinate origin);
 int strcount(char *, const char);
 int str2count(char **str2, int height, const char);
 int split(char ***xssp, char *xs, const char);
+char *join(char **, int, char);
 coordinate str2dstr(char **, int, const char);
 void printstr2(char **, int);
 

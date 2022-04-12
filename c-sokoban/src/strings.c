@@ -10,8 +10,8 @@ coordinate add(coordinate p1, coordinate p2) {
 char getstr2coor(char **xss, coordinate p) {
     return xss[p.y][p.x];
 }
-void setstr2coor(char ***xssp, coordinate p, char c) {
-    (*xssp)[p.y][p.x] = c;
+void setstr2coor(char ***xssPtr, coordinate p, char c) {
+    (*xssPtr)[p.y][p.x] = c;
 }
 
 void coorcopy(coordinate *dest, const coordinate origin) {
@@ -41,12 +41,12 @@ int str2count(char **str2, int height, const char token) {
     return cnt;
 }
 
-int split(char ***xssp, char *xs, const char token) {
+int split(char ***xssPtr, char *xs, const char token) {
     char _token[2];
     _token[0] = token;
     _token[1] = 0;
 
-    if (*xssp == NULL) {
+    if (*xssPtr == NULL) {
         ; //
     }
     if (xs == NULL) {
@@ -54,13 +54,29 @@ int split(char ***xssp, char *xs, const char token) {
     }
 
     int size = strcount(xs, token) + 1;
-    *xssp = malloc(sizeof(char *) * size);
+    *xssPtr = malloc(sizeof(char *) * size);
 
-    (*xssp)[0] = strtok(xs, _token);
+    (*xssPtr)[0] = strtok(xs, _token);
     for (int i = 1; i < size; i++) {
-        (*xssp)[i] = strtok(NULL, _token);
+        (*xssPtr)[i] = strtok(NULL, _token);
     }
     return size;
+}
+
+char *join(char **str2, int height, char _endline) {
+    int length = 0;
+    for (int i = 0; i < height; i++) {
+        length += strlen(str2[i]) + 1;
+    }
+    char endline[2];
+    endline[0] = _endline;
+    endline[1] = 0;
+    char *str = malloc(sizeof(char) * length);
+    for (int i = 0; i < height; i++) {
+        strcat(str, str2[i]);
+        strcat(str, endline);
+    }
+    return str;
 }
 
 coordinate str2dstr(char **xss, int height, const char token) {
